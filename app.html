@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sexy Video Call - Live</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: #000;
+            color: #fff;
+            overflow: hidden;
+            position: relative;
+            height: 100vh;
+        }
+
+        /* Main Container */
+        .app-container {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* Header */
+        .app-header {
+            background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .back-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #9c27b0, #673ab7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .user-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .user-status {
+            font-size: 12px;
+            color: #4caf50;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #4caf50;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .header-right {
+            display: flex;
+            gap: 10px;
+        }
+
+        .header-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .header-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+
+        .live-badge {
+            background: linear-gradient(45deg, #ff416c, #ff4b2b);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            animation: blink 2s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        /* Video Container */
+        .video-container {
+            flex: 1;
+            position: relative;
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .main-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .video-placeholder {
+            width: 100%;
+            height: 100%;
+            background: url('https://i.makeagif.com/media/2-01-2023/bltEx7.gif') center/cover;
+            position: relative;
+        }
+
+        .video-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, transparent 30%, transparent 70%, rgba(0,0,0,0.5) 100%);
+            pointer-events: none;
+        }
+
+        /* Self Video */
+        .self-video {
+            position: absolute;
+            top: 80px;
+            right: 20px;
+            width: 120px;
+            height: 160px;
+            background: #222;
+            border-radius: 15px;
+            overflow: hidden;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .self-video:hover {
+            transform: scale(1.05);
+            border-color: rgba(156, 39, 176, 0.5);
+        }
+
+        .self-video-placeholder {
+            width: 100%;
+            height: 100%;
+            background: url('https://picsum.photos/seed/selfvideo/240/320.jpg') center/cover;
+        }
+
+        .self-video-controls {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            display: flex;
+            gap: 5px;
+        }
+
+        .self-video-btn {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.7);
+            border: none;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            font-size: 10px;
+        }
+
+        /* Chat Container */
+        .chat-container {
+            position: absolute;
+            bottom: 100px;
+            left: 20px;
+            right: 20px;
+            max-height: 300px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 20px;
+            padding: 15px;
+            backdrop-filter: blur(10px);
+            display: none;
+            animation: slideUp 0.3s ease;
+        }
+
+        .chat-container.active {
+            display: block;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .chat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .chat-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: #9c27b0;
+        }
+
+        .close-chat {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        .chat-messages {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+        }
+
+        .chat-message {
+            margin-bottom: 10px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message-sent {
+            text-align: right;
+        }
+
+        .message-received {
+            text-align: left;
+        }
+
+        .message-bubble {
+            display: inline-block;
+            padding: 8px 12px;
+            border-radius: 15px;
+            max-width: 70%;
+            word-wrap: break-word;
+        }
+
+        .message-sent .message-bubble {
+            background: linear-gradient(45deg, #9c27b0, #673ab7);
+            color: white;
+        }
+
+        .message-received .message-bubble {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .message-time {
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.5);
+            margin-top: 3px;
+        }
+
+        .chat-input-container {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 10px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            color: white;
+            outline: none;
+            font-size: 14px;
+        }
+
+        .chat-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .send-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #9c27b0, #673ab7);
+            border: none;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .send-btn:hover {
+            transform: scale(1.1);
+        }
+
+        /* Bottom Controls */
+        .bottom-controls {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(0deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.7) 100%);
+            padding: 20px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .control-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+
+        .control-btn.active {
+            background: rgba(76, 175, 80, 0.3);
+            border-color: #4caf50;
+        }
+
+        .control-btn.danger {
+            background: rgba(244, 67, 54, 0.3);
+            border-color: #f44336;
+        }
+
+        .control-btn.danger:hover {
+            background: rgba(244, 67, 54, 0.5);
+        }
+
+        .control-btn.primary {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(45deg, #9c27b0, #673ab7);
+            border: none;
+        }
+
+        .control-btn.primary:hover {
+            background: linear-gradient(45deg, #8e24aa, #5e35b1);
+        }
+
+        .control-btn i {
+            font-size: 24px;
+        }
+
+        .control-btn.primary i {
+            font-size: 28px;
+        }
+
+        .control-tooltip {
+            position: absolute;
+            bottom: 70px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .control-btn:hover .control-tooltip {
+            opacity: 1;
+        }
+
+        /* Gift Panel */
+        .gift-panel {
+            position: absolute;
+            bottom: 100px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 15px;
+            padding: 15px;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+
+        .gift-panel.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .gift-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .gift-item {
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .gift-item:hover {
+            background: rgba(156, 39, 176, 0.3);
+            transform: scale(1.1);
+        }
+
+        .gift-icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .gift-price {
+            font-size: 10px;
+            color: #ffc107;
+        }
+
+        .gift-close {
+            text-align: center;
+            color: #9c27b0;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        /* Floating Hearts Animation */
+        .heart {
+            position: absolute;
+            color: #ff416c;
+            font-size: 20px;
+            animation: floatUp 3s ease-in-out;
+            pointer-events: none;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0) scale(0);
+                opacity: 1;
+            }
+            15% {
+                transform: translateY(-20px) scale(1);
+            }
+            100% {
+                transform: translateY(-200px) scale(0.3);
+                opacity: 0;
+            }
+        }
+
+        /* Timer */
+        .call-timer {
+            position: absolute;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .timer-icon {
+            color: #4caf50;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .self-video {
+                width: 80px;
+                height: 120px;
+                top: 70px;
+                right: 10px;
+            }
+
+            .control-btn {
+                width: 50px;
+                height: 50px;
+            }
+
+            .control-btn.primary {
+                width: 60px;
+                height: 60px;
+            }
+
+            .control-btn i {
+                font-size: 20px;
+            }
+
+            .control-btn.primary i {
+                font-size: 24px;
+            }
+
+            .chat-container {
+                left: 10px;
+                right: 10px;
+                bottom: 90px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .user-name {
+                font-size: 14px;
+            }
+
+            .user-status {
+                font-size: 10px;
+            }
+
+            .self-video {
+                width: 60px;
+                height: 90px;
+            }
+
+            .bottom-controls {
+                padding: 15px 10px;
+            }
+
+            .control-btn {
+                width: 45px;
+                height: 45px;
+            }
+
+            .control-btn.primary {
+                width: 55px;
+                height: 55px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <div class="app-header">
+            <div class="header-left">
+                <button class="back-btn" onclick="goBack()">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <div class="user-info">
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="user-details">
+                        <div class="user-name">Beautiful Stranger</div>
+                        <div class="user-status">
+                            <span class="status-dot"></span>
+                            <span>Online</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="header-right">
+                <button class="header-btn" onclick="toggleProfile()">
+                    <i class="fas fa-user-circle"></i>
+                </button>
+                <button class="header-btn" onclick="toggleMore()">
+                    <i class="fas fa-ellipsis-v"></i>
+                </button>
+                <div class="live-badge">LIVE</div>
+            </div>
+        </div>
+
+        <!-- Call Timer -->
+        <div class="call-timer">
+            <i class="fas fa-clock timer-icon"></i>
+            <span id="timer">00:00</span>
+        </div>
+
+        <!-- Video Container -->
+        <div class="video-container">
+            <div class="video-placeholder">
+                <div class="video-overlay"></div>
+            </div>
+            
+            <!-- Self Video -->
+            <div class="self-video" onclick="toggleSelfVideoSize()">
+                <div class="self-video-placeholder"></div>
+                <div class="self-video-controls">
+                    <button class="self-video-btn" onclick="toggleSelfMute(event)">
+                        <i class="fas fa-microphone"></i>
+                    </button>
+                    <button class="self-video-btn" onclick="toggleSelfVideo(event)">
+                        <i class="fas fa-video"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Container -->
+        <div class="chat-container" id="chatContainer">
+            <div class="chat-header">
+                <div class="chat-title">Chat</div>
+                <button class="close-chat" onclick="toggleChat()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <div class="chat-message message-received">
+                    <div class="message-bubble">Hey there! How are you? 😊</div>
+                    <div class="message-time">12:30 PM</div>
+                </div>
+                <div class="chat-message message-sent">
+                    <div class="message-bubble">I'm good! You look amazing today</div>
+                    <div class="message-time">12:31 PM</div>
+                </div>
+                <div class="chat-message message-received">
+                    <div class="message-bubble">Thank you! 💕 Ready to have some fun?</div>
+                    <div class="message-time">12:32 PM</div>
+                </div>
+            </div>
+            <div class="chat-input-container">
+                <input type="text" class="chat-input" id="chatInput" placeholder="Type a message..." onkeypress="handleChatKeyPress(event)">
+                <button class="send-btn" onclick="sendMessage()">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Gift Panel -->
+        <div class="gift-panel" id="giftPanel">
+            <div class="gift-grid">
+                <div class="gift-item" onclick="sendGift('rose')">
+                    <div class="gift-icon">🌹</div>
+                    <div class="gift-price">₹10</div>
+                </div>
+                <div class="gift-item" onclick="sendGift('heart')">
+                    <div class="gift-icon">❤️</div>
+                    <div class="gift-price">₹20</div>
+                </div>
+                <div class="gift-item" onclick="sendGift('kiss')">
+                    <div class="gift-icon">💋</div>
+                    <div class="gift-price">₹30</div>
+                </div>
+                <div class="gift-item" onclick="sendGift('diamond')">
+                    <div class="gift-icon">💎</div>
+                    <div class="gift-price">₹50</div>
+                </div>
+                <div class="gift-item" onclick="sendGift('crown')">
+                    <div class="gift-icon">👑</div>
+                    <div class="gift-price">₹100</div>
+                </div>
+                <div class="gift-item" onclick="sendGift('car')">
+                    <div class="gift-icon">🚗</div>
+                    <div class="gift-price">₹500</div>
+                </div>
+            </div>
+            <div class="gift-close" onclick="toggleGifts()">Close</div>
+        </div>
+
+        <!-- Bottom Controls -->
+        <div class="bottom-controls">
+            <button class="control-btn" id="muteBtn" onclick="toggleMute()">
+                <i class="fas fa-microphone"></i>
+                <span class="control-tooltip">Mute</span>
+            </button>
+            <button class="control-btn" id="videoBtn" onclick="toggleVideo()">
+                <i class="fas fa-video"></i>
+                <span class="control-tooltip">Video</span>
+            </button>
+            <button class="control-btn" onclick="toggleChat()">
+                <i class="fas fa-comment"></i>
+                <span class="control-tooltip">Chat</span>
+            </button>
+            <button class="control-btn" onclick="toggleGifts()">
+                <i class="fas fa-gift"></i>
+                <span class="control-tooltip">Send Gift</span>
+            </button>
+            <button class="control-btn primary" onclick="toggleCall()">
+                <i class="fas fa-phone"></i>
+                <span class="control-tooltip">End Call</span>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Timer functionality
+        let seconds = 0;
+        let timerInterval;
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                seconds++;
+                const minutes = Math.floor(seconds / 60);
+                const secs = seconds % 60;
+                document.getElementById('timer').textContent = 
+                    `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            }, 1000);
+        }
+
+        // Initialize timer on page load
+        startTimer();
+
+        // Control functions
+        let isMuted = false;
+        let isVideoOff = false;
+        let isSelfMuted = false;
+        let isSelfVideoOff = false;
+
+        function toggleMute() {
+            isMuted = !isMuted;
+            const btn = document.getElementById('muteBtn');
+            const icon = btn.querySelector('i');
+            
+            if (isMuted) {
+                btn.classList.add('active');
+                icon.classList.remove('fa-microphone');
+                icon.classList.add('fa-microphone-slash');
+            } else {
+                btn.classList.remove('active');
+                icon.classList.remove('fa-microphone-slash');
+                icon.classList.add('fa-microphone');
+            }
+        }
+
+        function toggleVideo() {
+            isVideoOff = !isVideoOff;
+            const btn = document.getElementById('videoBtn');
+            const icon = btn.querySelector('i');
+            
+            if (isVideoOff) {
+                btn.classList.add('active');
+                icon.classList.remove('fa-video');
+                icon.classList.add('fa-video-slash');
+            } else {
+                btn.classList.remove('active');
+                icon.classList.remove('fa-video-slash');
+                icon.classList.add('fa-video');
+            }
+        }
+
+        function toggleSelfMute(event) {
+            event.stopPropagation();
+            isSelfMuted = !isSelfMuted;
+            const btn = event.currentTarget;
+            const icon = btn.querySelector('i');
+            
+            if (isSelfMuted) {
+                icon.classList.remove('fa-microphone');
+                icon.classList.add('fa-microphone-slash');
+            } else {
+                icon.classList.remove('fa-microphone-slash');
+                icon.classList.add('fa-microphone');
+            }
+        }
+
+        function toggleSelfVideo(event) {
+            event.stopPropagation();
+            isSelfVideoOff = !isSelfVideoOff;
+            const btn = event.currentTarget;
+            const icon = btn.querySelector('i');
+            
+            if (isSelfVideoOff) {
+                icon.classList.remove('fa-video');
+                icon.classList.add('fa-video-slash');
+            } else {
+                icon.classList.remove('fa-video-slash');
+                icon.classList.add('fa-video');
+            }
+        }
+
+        function toggleChat() {
+            const chatContainer = document.getElementById('chatContainer');
+            chatContainer.classList.toggle('active');
+            
+            // Close gift panel if open
+            document.getElementById('giftPanel').classList.remove('active');
+        }
+
+        function toggleGifts() {
+            const giftPanel = document.getElementById('giftPanel');
+            giftPanel.classList.toggle('active');
+            
+            // Close chat if open
+            document.getElementById('chatContainer').classList.remove('active');
+        }
+
+        function toggleSelfVideoSize() {
+            const selfVideo = document.querySelector('.self-video');
+            if (selfVideo.style.width === '240px') {
+                selfVideo.style.width = '120px';
+                selfVideo.style.height = '160px';
+            } else {
+                selfVideo.style.width = '240px';
+                selfVideo.style.height = '320px';
+            }
+        }
+
+        // Chat functionality
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            
+            if (message) {
+                const chatMessages = document.getElementById('chatMessages');
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'chat-message message-sent';
+                
+                const now = new Date();
+                const time = now.toLocaleTimeString('en-US', { 
+                    hour: 'numeric', 
+                    minute: '2-digit',
+                    hour12: true 
+                });
+                
+                messageDiv.innerHTML = `
+                    <div class="message-bubble">${message}</div>
+                    <div class="message-time">${time}</div>
+                `;
+                
+                chatMessages.appendChild(messageDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                input.value = '';
+                
+                // Simulate response after 2 seconds
+                setTimeout(() => {
+                    const responseDiv = document.createElement('div');
+                    responseDiv.className = 'chat-message message-received';
+                    
+                    const responses = [
+                        "That's interesting! Tell me more 😊",
+                        "I love talking to you! 💕",
+                        "You're making me blush! 🥰",
+                        "Wow, you're so sweet! 🍰",
+                        "I'm having so much fun with you! 🎉"
+                    ];
+                    
+                    const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+                    
+                    responseDiv.innerHTML = `
+                        <div class="message-bubble">${randomResponse}</div>
+                        <div class="message-time">${time}</div>
+                    `;
+                    
+                    chatMessages.appendChild(responseDiv);
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }, 2000);
+            }
+        }
+
+        function handleChatKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        // Gift functionality
+        function sendGift(giftType) {
+            const giftEmojis = {
+                'rose': '🌹',
+                'heart': '❤️',
+                'kiss': '💋',
+                'diamond': '💎',
+                'crown': '👑',
+                'car': '🚗'
+            };
+            
+            // Create floating heart animation
+            const heart = document.createElement('div');
+            heart.className = 'heart';
+            heart.innerHTML = giftEmojis[giftType];
+            heart.style.left = Math.random() * window.innerWidth + 'px';
+            heart.style.bottom = '100px';
+            
+            document.body.appendChild(heart);
+            
+            setTimeout(() => {
+                heart.remove();
+            }, 3000);
+            
+            // Close gift panel
+            document.getElementById('giftPanel').classList.remove('active');
+            
+            // Show gift in chat
+            const chatMessages = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'chat-message message-sent';
+            
+            const now = new Date();
+            const time = now.toLocaleTimeString('en-US', { 
+                hour: 'numeric', 
+                minute: '2-digit',
+                hour12: true 
+            });
+            
+            messageDiv.innerHTML = `
+                <div class="message-bubble">Sent a ${giftEmojis[giftType]} gift!</div>
+                <div class="message-time">${time}</div>
+            `;
+            
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            // Show thank you response
+            setTimeout(() => {
+                const responseDiv = document.createElement('div');
+                responseDiv.className = 'chat-message message-received';
+                responseDiv.innerHTML = `
+                    <div class="message-bubble">Thank you so much! 💕 That's so sweet of you!</div>
+                    <div class="message-time">${time}</div>
+                `;
+                chatMessages.appendChild(responseDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }, 1500);
+        }
+
+        // Navigation functions
+        function goBack() {
+            if (confirm('Are you sure you want to leave the call?')) {
+                window.location.href = 'index.html';
+            }
+        }
+
+        function toggleProfile() {
+            alert('Profile feature coming soon!');
+        }
+
+        function toggleMore() {
+            alert('More options coming soon!');
+        }
+
+        function toggleCall() {
+            if (confirm('Are you sure you want to end the call?')) {
+                clearInterval(timerInterval);
+                alert('Call ended. Thank you for using Sexy Video Call!');
+                window.location.href = 'index.html';
+            }
+        }
+
+        // Add some random floating hearts for ambiance
+        setInterval(() => {
+            if (Math.random() > 0.7) {
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                heart.innerHTML = '❤️';
+                heart.style.left = Math.random() * window.innerWidth + 'px';
+                heart.style.bottom = '0px';
+                
+                document.body.appendChild(heart);
+                
+                setTimeout(() => {
+                    heart.remove();
+                }, 3000);
+            }
+        }, 5000);
+
+        // Prevent accidental back navigation
+        window.addEventListener('popstate', function(event) {
+            event.preventDefault();
+            if (confirm('Are you sure you want to leave the call?')) {
+                window.location.href = 'index.html';
+            }
+        });
+
+        // Handle page visibility change
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                console.log('Page is hidden - call is still active');
+            } else {
+                console.log('Page is visible - resuming call');
+            }
+        });
+    </script>
+</body>
+</html>

